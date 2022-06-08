@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
 
 public class CustomGrid : MonoBehaviour
@@ -25,20 +26,24 @@ public class CustomGrid : MonoBehaviour
 
     private void Start()
     {
+        runSimulation = false;
+
         gridUnity = GetComponentInParent<Grid>();
         tilemap = GetComponent<Tilemap>();
 
         CreateGrid();
+        OutputGrid();
     }
 
 
     private void Update()
     {
-
+        if (runSimulation) { return; }
         if (Input.GetMouseButton(0))
         {
+            if (EventSystem.current.IsPointerOverGameObject()) { return; }
+
             gridPos = ConvertToGridPosition(ct.GetMousePosition());
-            Debug.Log("gridPos: " + gridPos);
 
             grid[gridPos.y, gridPos.x].SetState(Node.State.Alive);
             OutputGrid();
@@ -46,6 +51,8 @@ public class CustomGrid : MonoBehaviour
 
         if (Input.GetMouseButton(1))
         {
+            if (EventSystem.current.IsPointerOverGameObject()) { return; }
+
             gridPos = ConvertToGridPosition(ct.GetMousePosition());
 
             grid[gridPos.y, gridPos.x].SetState(Node.State.Dead);
@@ -61,6 +68,7 @@ public class CustomGrid : MonoBehaviour
     // generates a grid of the given size consisting of nodes
     public void CreateGrid()
     {
+        runSimulation = false;
         grid = new Node[size_x, size_y];
         gridCopy = new Node[size_x, size_y];
 
@@ -78,6 +86,7 @@ public class CustomGrid : MonoBehaviour
 
     public void CreateIdenticalGrid(bool isAlive)
     {
+        runSimulation = false;
         Node.State state = isAlive ? Node.State.Alive : Node.State.Dead;
 
         for (int y = 0; y < size_y; y++)
@@ -87,6 +96,8 @@ public class CustomGrid : MonoBehaviour
                 grid[x, y].SetState(state);
             }
         }
+
+        OutputGrid();
     }
 
     Node.State RandomiseNodeState()
