@@ -17,7 +17,7 @@ public class CustomGrid : MonoBehaviour
     public Tile aliveTile;
     public Tile deadTile;
 
-    private const float DELAY = 0.25f;
+    private const float DELAY = 0.15f;
 
     private Grid gridUnity;
 
@@ -235,48 +235,6 @@ public class CustomGrid : MonoBehaviour
         }
 
         grid = newGrid;
-
-        //foreach (Node node in gridCopy)
-        //{
-        //    List<Node> neighbours = Neighbours(node);
-        //    int neighboursAlive = 0;
-        //    int neighboursDead = 0;
-        //    foreach (Node neighbour in neighbours)
-        //    {
-        //        if (neighbour.GetState() == Node.State.Alive)
-        //        {
-        //            neighboursAlive++;
-        //        }
-        //        else
-        //        {
-        //            neighboursDead++;
-        //        }
-        //    }
-        //    /* Rules:
-        //     * 1. Any live cell with two or three live neighbours survives
-        //     * 2. Dead cells with three live neighbours becomes a live cell
-        //     * 3. Else live cell dies
-        //     */
-        //    if (node.GetState() == Node.State.Alive)
-        //    {
-        //        if (neighboursAlive == 2 || neighboursAlive == 3)
-        //        {
-        //            // survives
-        //        }
-        //        else
-        //        {
-        //            // dies
-        //            node.SetState(Node.State.Dead);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        if (neighboursAlive == 3)
-        //        {
-        //            node.SetState(Node.State.Alive);
-        //        }
-        //    }
-        //}
     }
 
     IEnumerator GenerateGridLoop()
