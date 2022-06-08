@@ -72,9 +72,9 @@ public class CustomGrid : MonoBehaviour
         grid = new Node[size_x, size_y];
         gridCopy = new Node[size_x, size_y];
 
-        for (int y = 0; y < size_y; y++)
+        for (int x = 0; x < size_x; x++)
         {
-            for (int x = 0; x < size_x; x++)
+            for (int y = 0; y < size_y; y++)
             {
                 grid[x, y] = new Node(RandomiseNodeState(), x, y);
                 gridCopy[x, y] = new Node(grid[x, y].GetState(), x, y);
@@ -89,9 +89,9 @@ public class CustomGrid : MonoBehaviour
         runSimulation = false;
         Node.State state = isAlive ? Node.State.Alive : Node.State.Dead;
 
-        for (int y = 0; y < size_y; y++)
+        for (int x = 0; x < size_x; x++)
         {
-            for (int x = 0; x < size_x; x++)
+            for (int y = 0; y < size_y; y++)
             {
                 grid[x, y].SetState(state);
             }
