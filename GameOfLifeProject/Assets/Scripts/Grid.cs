@@ -15,7 +15,7 @@ public class Grid : MonoBehaviour
     public Tile aliveTile;
     public Tile deadTile;
 
-    private const float DELAY = 2f;
+    private const float DELAY = 0.25f;
 
     private void Start()
     {
@@ -23,7 +23,7 @@ public class Grid : MonoBehaviour
     }
 
     // generates a grid of the given size consisting of nodes
-    void CreateGrid()
+    public void CreateGrid()
     {
         grid = new Node[size_x, size_y];
 
@@ -35,7 +35,29 @@ public class Grid : MonoBehaviour
             }
         }
 
+        OutputGrid();
+    }
+
+    enum SimulationStatus
+    {
+        Active,
+        NotActive,
+    }
+
+    SimulationStatus sStatus = SimulationStatus.NotActive;
+    bool runSimulation = true;
+    public void StartGame()
+    {
+        if (sStatus == SimulationStatus.Active) { return; }
+
+        sStatus = SimulationStatus.Active;
+        runSimulation = true;
         StartCoroutine(GenerateGridLoop());
+    }
+
+    public void StopGame()
+    {
+        runSimulation = false;
     }
 
     // returns a list of all neighbours of a node
@@ -136,12 +158,15 @@ public class Grid : MonoBehaviour
     IEnumerator GenerateGridLoop()
     {
         OutputGrid();
-        while (true)
+        while (runSimulation)
         {
             UpdateGrid();
             OutputGrid();
 
             yield return new WaitForSeconds(DELAY);
         }
+
+        sStatus = SimulationStatus.NotActive;
+        yield break;
     }
 }
