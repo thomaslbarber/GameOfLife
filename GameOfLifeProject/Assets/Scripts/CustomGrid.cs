@@ -10,6 +10,7 @@ public class CustomGrid : MonoBehaviour
 
     // stores all the nodes in the grid
     public Node[,] grid;
+    Node[,] gridCopy;
 
     public Tilemap tilemap;
     public Tile aliveTile;
@@ -61,12 +62,14 @@ public class CustomGrid : MonoBehaviour
     public void CreateGrid()
     {
         grid = new Node[size_x, size_y];
+        gridCopy = new Node[size_x, size_y];
 
         for (int y = 0; y < size_y; y++)
         {
             for (int x = 0; x < size_x; x++)
             {
                 grid[x, y] = new Node(RandomiseNodeState(), x, y);
+                gridCopy[x, y] = new Node(grid[x, y].GetState(), x, y);
             }
         }
 
@@ -164,49 +167,105 @@ public class CustomGrid : MonoBehaviour
     // updates the grid according to the rules of the game of life
     public void UpdateGrid()
     {
-        foreach (Node node in grid)
+        Node[,] newGrid = new Node[size_x, size_y];
+
+        for (int x = 0; x < size_x; x++)
         {
-            List<Node> neighbours = Neighbours(node);
-            int neighboursAlive = 0;
-            int neighboursDead = 0;
-            foreach (Node neighbour in neighbours)
+            for (int y = 0; y < size_y; y++)
             {
-                if (neighbour.GetState() == Node.State.Alive)
+                List<Node> neighbours = Neighbours(grid[x, y]);
+
+                int neighboursAlive = 0;
+                int neighboursDead = 0;
+                foreach (Node neighbour in neighbours)
                 {
-                    neighboursAlive++;
+                    if (neighbour.GetState() == Node.State.Alive)
+                    {
+                        neighboursAlive++;
+                    }
+                    else
+                    {
+                        neighboursDead++;
+                    }
+                }
+
+                /* Rules:
+                 * 1. Any live cell with two or three live neighbours survives
+                 * 2. Dead cells with three live neighbours becomes a live cell
+                 * 3. Else live cell dies
+                 */
+
+                if (grid[x, y].GetState() == Node.State.Alive)
+                {
+                    if (neighboursAlive == 2 || neighboursAlive == 3)
+                    {
+                        // survives
+                        newGrid[x, y] = new Node(Node.State.Alive, x, y);
+                    }
+                    else
+                    {
+                        // dies
+                        newGrid[x, y] = new Node(Node.State.Dead, x, y);
+                    }
                 }
                 else
                 {
-                    neighboursDead++;
+                    if (neighboursAlive == 3)
+                    {
+                        newGrid[x, y] = new Node(Node.State.Alive, x, y);
+                    }
+                    else
+                    {
+                        newGrid[x, y] = new Node(Node.State.Dead, x, y);
+                    }
                 }
-            }
 
-            /* Rules:
-             * 1. Any live cell with two or three live neighbours survives
-             * 2. Dead cells with three live neighbours becomes a live cell
-             * 3. Else live cell dies
-             */
-
-            if (node.GetState() == Node.State.Alive)
-            {
-                if (neighboursAlive == 2 || neighboursAlive == 3)
-                {
-                    // survives
-                }
-                else
-                {
-                    // dies
-                    node.SetState(Node.State.Dead);
-                }
-            }
-            else
-            {
-                if (neighboursAlive == 3)
-                {
-                    node.SetState(Node.State.Alive);
-                }
             }
         }
+
+        grid = newGrid;
+
+        //foreach (Node node in gridCopy)
+        //{
+        //    List<Node> neighbours = Neighbours(node);
+        //    int neighboursAlive = 0;
+        //    int neighboursDead = 0;
+        //    foreach (Node neighbour in neighbours)
+        //    {
+        //        if (neighbour.GetState() == Node.State.Alive)
+        //        {
+        //            neighboursAlive++;
+        //        }
+        //        else
+        //        {
+        //            neighboursDead++;
+        //        }
+        //    }
+        //    /* Rules:
+        //     * 1. Any live cell with two or three live neighbours survives
+        //     * 2. Dead cells with three live neighbours becomes a live cell
+        //     * 3. Else live cell dies
+        //     */
+        //    if (node.GetState() == Node.State.Alive)
+        //    {
+        //        if (neighboursAlive == 2 || neighboursAlive == 3)
+        //        {
+        //            // survives
+        //        }
+        //        else
+        //        {
+        //            // dies
+        //            node.SetState(Node.State.Dead);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (neighboursAlive == 3)
+        //        {
+        //            node.SetState(Node.State.Alive);
+        //        }
+        //    }
+        //}
     }
 
     IEnumerator GenerateGridLoop()
