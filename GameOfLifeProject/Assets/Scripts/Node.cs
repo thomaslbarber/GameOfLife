@@ -7,13 +7,13 @@ public class Node : MonoBehaviour
     public int YPos { get; set; }
 
     // Whether the node is alive or dead
-    private enum State
+    public enum State
     {
         Alive,
         Dead
     }
 
-    
+
     private State state;
 
     public Node(int xPos = 0, int yPos = 0)
@@ -28,8 +28,18 @@ public class Node : MonoBehaviour
 
     private void SetState()
     {
-        int i = Random.Range(0, 32);
+        int i = Random.Range(0, 16);
         if (i == 0) { state = State.Alive; return; }
         state = State.Dead;
+    }
+
+    public State GetState()
+    {
+        return state;
+    }
+
+    public void SetState(State newState)
+    {
+        state = newState;
     }
 }
