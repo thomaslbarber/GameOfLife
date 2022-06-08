@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    // Boundaries
     public float xMin = 5;
     public float xMax = 510;
     public float yMin = 5;
     public float yMax = 510;
-
 
     // Update is called once per frame
     void Update()

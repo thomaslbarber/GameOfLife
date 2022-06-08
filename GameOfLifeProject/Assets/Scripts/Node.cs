@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Node : MonoBehaviour
+public class Node
 {
     // Position of the node
     public int XPos { get; set; }
@@ -13,24 +13,16 @@ public class Node : MonoBehaviour
         Dead
     }
 
-
     private State state;
 
-    public Node(int xPos = 0, int yPos = 0)
+    public Node(State state, int xPos = 0, int yPos = 0)
     {
-        // Set position
+        // Set the position
         XPos = xPos;
         YPos = yPos;
 
-        // Set the state of the node
-        SetState();
-    }
-
-    private void SetState()
-    {
-        int i = Random.Range(0, 16);
-        if (i == 0) { state = State.Alive; return; }
-        state = State.Dead;
+        // Set the state
+        SetState(state);
     }
 
     public State GetState()

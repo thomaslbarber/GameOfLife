@@ -17,9 +17,44 @@ public class CustomGrid : MonoBehaviour
 
     private const float DELAY = 0.25f;
 
+    private Grid gridUnity;
+
+    CursorTracker ct = new CursorTracker();
+    Vector3Int gridPos;
+
     private void Start()
     {
+        gridUnity = GetComponentInParent<Grid>();
+        tilemap = GetComponent<Tilemap>();
+
         CreateGrid();
+    }
+
+
+    private void Update()
+    {
+
+        if (Input.GetMouseButton(0))
+        {
+            gridPos = ConvertToGridPosition(ct.GetMousePosition());
+            Debug.Log("gridPos: " + gridPos);
+
+            grid[gridPos.y, gridPos.x].SetState(Node.State.Alive);
+            OutputGrid();
+        }
+
+        if (Input.GetMouseButton(1))
+        {
+            gridPos = ConvertToGridPosition(ct.GetMousePosition());
+
+            grid[gridPos.y, gridPos.x].SetState(Node.State.Dead);
+            OutputGrid();
+        }
+    }
+
+    Vector3Int ConvertToGridPosition(Vector3 position)
+    {
+        return gridUnity.WorldToCell(position);
     }
 
     // generates a grid of the given size consisting of nodes
@@ -31,11 +66,31 @@ public class CustomGrid : MonoBehaviour
         {
             for (int x = 0; x < size_x; x++)
             {
-                grid[x, y] = new Node(x, y);
+                grid[x, y] = new Node(RandomiseNodeState(), x, y);
             }
         }
 
         OutputGrid();
+    }
+
+    public void CreateIdenticalGrid(bool isAlive)
+    {
+        Node.State state = isAlive ? Node.State.Alive : Node.State.Dead;
+
+        for (int y = 0; y < size_y; y++)
+        {
+            for (int x = 0; x < size_x; x++)
+            {
+                grid[x, y].SetState(state);
+            }
+        }
+    }
+
+    Node.State RandomiseNodeState()
+    {
+        int i = Random.Range(0, 16);
+        if (i == 0) { return Node.State.Alive; }
+        return Node.State.Dead;
     }
 
     enum SimulationStatus
@@ -87,7 +142,6 @@ public class CustomGrid : MonoBehaviour
     // outputs the current grid to the console
     public void OutputGrid()
     {
-
         for (int i = 0; i < size_y; i++)
         {
             for (int j = 0; j < size_x; j++)
@@ -128,9 +182,9 @@ public class CustomGrid : MonoBehaviour
             }
 
             /* Rules:
-             * any live cell with two or three live neighbours survives
-             * dead cells with three live neighbours becomes a live cell
-             * else live cell dies
+             * 1. Any live cell with two or three live neighbours survives
+             * 2. Dead cells with three live neighbours becomes a live cell
+             * 3. Else live cell dies
              */
 
             if (node.GetState() == Node.State.Alive)
