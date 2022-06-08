@@ -1,18 +1,35 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Node : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    // Position of the node
+    public int XPos { get; set; }
+    public int YPos { get; set; }
+
+    // Whether the node is alive or dead
+    private enum State
     {
-        
+        Alive,
+        Dead
     }
 
-    // Update is called once per frame
-    void Update()
+    
+    private State state;
+
+    public Node(int xPos = 0, int yPos = 0)
     {
-        
+        // Set position
+        XPos = xPos;
+        YPos = yPos;
+
+        // Set the state of the node
+        SetState();
+    }
+
+    private void SetState()
+    {
+        int i = Random.Range(0, 32);
+        if (i == 0) { state = State.Alive; return; }
+        state = State.Dead;
     }
 }
