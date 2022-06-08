@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Grid : MonoBehaviour
+public class CustomGrid : MonoBehaviour
 {
     public int size_x;
     public int size_y;
