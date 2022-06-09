@@ -38,7 +38,14 @@ public class CustomGrid : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (runSimulation) { StopGame(); }
+            else { StartGame(); }
+        }
+
         if (runSimulation) { return; }
+
         if (Input.GetMouseButton(0))
         {
             if (EventSystem.current.IsPointerOverGameObject()) { return; }
