@@ -13,7 +13,7 @@ public class CameraController : MonoBehaviour
     public float xMax = 510;
     public float yMin = 5;
     public float yMax = 510;
-    float moveSpeed = 2f;
+    readonly float moveSpeed = 2f;
 
     // Zoom variables.
     [SerializeField] private CinemachineVirtualCamera cinemachineCamera;

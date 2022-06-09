@@ -308,6 +308,7 @@ public class CustomGrid : MonoBehaviour
                 }
             }
         }
+
         // Update the grid.
         grid = newGrid;
     }
