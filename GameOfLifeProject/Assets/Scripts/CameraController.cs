@@ -23,7 +23,7 @@ public class CameraController : MonoBehaviour
     /// <summary>
     /// Update is called once per frame.
     /// </summary>
-    private void Update()
+    void Update()
     {
         Zoom();
     }
@@ -44,6 +44,9 @@ public class CameraController : MonoBehaviour
         if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
             camDist = Input.GetAxis("Mouse ScrollWheel") * sens;
+            cinemachineCamera.m_Lens.OrthographicSize -= camDist;
+            if (cinemachineCamera.m_Lens.OrthographicSize < 0) { cinemachineCamera.m_Lens.OrthographicSize = 0; }
+            else if (cinemachineCamera.m_Lens.OrthographicSize > 135) { cinemachineCamera.m_Lens.OrthographicSize = 135; }
             cinemachineCamera.m_Lens.OrthographicSize -= camDist;
             if (cinemachineCamera.m_Lens.OrthographicSize < 0) { cinemachineCamera.m_Lens.OrthographicSize = 0; }
             else if (cinemachineCamera.m_Lens.OrthographicSize > 135) { cinemachineCamera.m_Lens.OrthographicSize = 135; }

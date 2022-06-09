@@ -5,40 +5,60 @@ using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
 
 /// <summary>
-/// Class for managing the grid of cells.
+/// Class for managing the grid and updating between the status of each cell for each generation.
 /// </summary>
 public class CustomGrid : MonoBehaviour
 {
-    private const int SIZE_X = 270;
-    private const int SIZE_Y = 480;
+    // The dimensions of the grid.
+    public int SIZE_X;
+    public int SIZE_Y;
 
-    // Stores all the nodes in the grid
-    private Cell[,] grid, gridCopy;
+    // Stores all the nodes in the grid (alongside a copy).
+    public Cell[,] grid, gridCopy;
 
+    // The tilemap.
     public Tilemap tilemap;
+    
+    // The tiles for alive/dead cells in the tilemap.
     [SerializeField] private Tile aliveTile;
     [SerializeField] private Tile deadTile;
 
+    // The delay between generations.
     private const float DELAY = 0.15f;
 
+    // Reference to the unity grid the tilemap uses.
     private Grid gridUnity;
 
-    private CursorTracker ct = new CursorTracker();
-    private Vector3Int gridPos;
+    // Tracks the cursor position in the world.
+    CursorTracker cursorTracker = new CursorTracker();
+
+    // Stores a world position in grid form.
+    Vector3Int gridPosition;
+
+    /// <summary>
+    /// Enum for whether the simulation is currently active or inactive.
+    /// </summary>
+    enum SimulationStatus
+    {
+        Active,
+        Inactive,
+    }
+
+    // The current state of the simulation.
+    SimulationStatus sStatus = SimulationStatus.Inactive;
 
     /// <summary>
     /// Start() is called before the first frame. Initialises necessary variables and sets the initial grid to be randomised.
     /// </summary>
     private void Start()
     {
-        runSimulation = false;
-
         gridUnity = GetComponentInParent<Grid>();
         tilemap = GetComponent<Tilemap>();
 
         CreateGrid();
         OutputGrid();
     }
+
 
     /// <summary>
     /// Update is called every frame.
@@ -47,7 +67,7 @@ public class CustomGrid : MonoBehaviour
     {
         CheckForKeyboardInputs();
 
-        if (runSimulation) { return; }
+        if (sStatus == SimulationStatus.Active) { return; }
 
         CheckForMouseInput();
     }
@@ -59,7 +79,7 @@ public class CustomGrid : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (runSimulation) { StopGame(); }
+            if (sStatus == SimulationStatus.Active) { StopGame(); }
             else { StartGame(); }
         }
     }
@@ -74,9 +94,10 @@ public class CustomGrid : MonoBehaviour
         {
             if (EventSystem.current.IsPointerOverGameObject()) { return; }
 
-            gridPos = ConvertToGridPosition(ct.GetMousePosition());
-            grid[gridPos.y, gridPos.x].SetState(Cell.State.Alive);
+            gridPosition = ConvertToGridPosition(cursorTracker.GetMousePosition());
+            grid[gridPosition.y, gridPosition.x].SetState(Cell.State.Alive);
 
+            grid[gridPosition.y, gridPosition.x].SetState(Cell.State.Alive);
             OutputGrid();
         }
 
@@ -85,13 +106,13 @@ public class CustomGrid : MonoBehaviour
         {
             if (EventSystem.current.IsPointerOverGameObject()) { return; }
 
-            gridPos = ConvertToGridPosition(ct.GetMousePosition());
-            grid[gridPos.y, gridPos.x].SetState(Cell.State.Dead);
+            gridPosition = ConvertToGridPosition(cursorTracker.GetMousePosition());
+            grid[gridPosition.y, gridPosition.x].SetState(Cell.State.Dead);
 
+            grid[gridPosition.y, gridPosition.x].SetState(Cell.State.Dead);
             OutputGrid();
         }
     }
-
 
     /// <summary>
     /// Converts a given Vector3 position into a position on the grid (as a Vector3Int).
@@ -108,7 +129,8 @@ public class CustomGrid : MonoBehaviour
     /// </summary>
     public void CreateGrid()
     {
-        runSimulation = false;
+        sStatus = SimulationStatus.Inactive;
+
         grid = new Cell[SIZE_X, SIZE_Y];
         gridCopy = new Cell[SIZE_X, SIZE_Y];
 
@@ -120,7 +142,6 @@ public class CustomGrid : MonoBehaviour
                 gridCopy[x, y] = new Cell(grid[x, y].GetState(), x, y);
             }
         }
-
         OutputGrid();
     }
 
@@ -130,7 +151,8 @@ public class CustomGrid : MonoBehaviour
     /// <param name="isAlive">Whether to generate the grid as alive cells or dead cells.</param>
     public void CreateIdenticalGrid(bool isAlive)
     {
-        runSimulation = false;
+        sStatus = SimulationStatus.Inactive;
+
         Cell.State state = isAlive ? Cell.State.Alive : Cell.State.Dead;
 
         for (int x = 0; x < SIZE_X; x++)
@@ -156,18 +178,6 @@ public class CustomGrid : MonoBehaviour
     }
 
     /// <summary>
-    /// Enum for whether the simulation is currently active or inactive.
-    /// </summary>
-    enum SimulationStatus
-    {
-        Active,
-        Inactive,
-    }
-
-    SimulationStatus sStatus = SimulationStatus.Inactive;
-    bool runSimulation = true;
-
-    /// <summary>
     /// Starts the simulation.
     /// </summary>
     public void StartGame()
@@ -175,7 +185,7 @@ public class CustomGrid : MonoBehaviour
         if (sStatus == SimulationStatus.Active) { return; }
 
         sStatus = SimulationStatus.Active;
-        runSimulation = true;
+
         StartCoroutine(GenerateGridLoop());
     }
 
@@ -184,7 +194,7 @@ public class CustomGrid : MonoBehaviour
     /// </summary>
     public void StopGame()
     {
-        runSimulation = false;
+        sStatus = SimulationStatus.Inactive;
     }
 
     /// <summary>
@@ -211,7 +221,6 @@ public class CustomGrid : MonoBehaviour
                 }
             }
         }
-
         return neighbours;
     }
 
@@ -233,9 +242,7 @@ public class CustomGrid : MonoBehaviour
                 {
                     tilemap.SetTile(p, deadTile);
                 }
-
             }
-
         }
     }
 
@@ -250,6 +257,7 @@ public class CustomGrid : MonoBehaviour
         {
             for (int y = 0; y < SIZE_Y; y++)
             {
+                // Count the number of alive/dead neighbours of the current cell.
                 List<Cell> neighbours = Neighbours(grid[x, y]);
 
                 int neighboursAlive = 0;
@@ -267,21 +275,21 @@ public class CustomGrid : MonoBehaviour
                 }
 
                 /* Rules:
-                 * 1. Any live cell with two or three live neighbours survives
-                 * 2. Dead cells with three live neighbours becomes a live cell
-                 * 3. Else live cell dies
+                 * 1. Any live cell with two or three live neighbours survives.
+                 * 2. Dead cells with three live neighbours becomes a live cell.
+                 * 3. Else live cell dies.
                  */
 
                 if (grid[x, y].GetState() == Cell.State.Alive)
                 {
                     if (neighboursAlive == 2 || neighboursAlive == 3)
                     {
-                        // survives
+                        // Survives.
                         newGrid[x, y] = new Cell(Cell.State.Alive, x, y);
                     }
                     else
                     {
-                        // dies
+                        // Dies.
                         newGrid[x, y] = new Cell(Cell.State.Dead, x, y);
                     }
                 }
@@ -289,23 +297,29 @@ public class CustomGrid : MonoBehaviour
                 {
                     if (neighboursAlive == 3)
                     {
+                        // Survives.
                         newGrid[x, y] = new Cell(Cell.State.Alive, x, y);
                     }
                     else
                     {
+                        // Dies.
                         newGrid[x, y] = new Cell(Cell.State.Dead, x, y);
                     }
                 }
             }
         }
-
+        // Update the grid.
         grid = newGrid;
     }
 
+    /// <summary>
+    /// An IEnumerator that manages the running of the game, updating the cells in the grid and outputting it to the game world for every generation.
+    /// </summary>
+    /// <returns>Delays the coroutine before calculating a new generation (for as long as the simulation is running).</returns>
     IEnumerator GenerateGridLoop()
     {
         OutputGrid();
-        while (runSimulation)
+        while (sStatus == SimulationStatus.Active)
         {
             UpdateGrid();
             OutputGrid();

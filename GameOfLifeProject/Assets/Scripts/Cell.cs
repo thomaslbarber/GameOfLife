@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// Each individual Cell in the game world
+/// Each individual Cell in the game world.
 /// </summary>
 public class Cell
 {

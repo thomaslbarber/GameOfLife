@@ -566,8 +566,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 061f7990c2978114bba31199f67484ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size_x: 270
-  size_y: 480
+  SIZE_X: 270
+  SIZE_Y: 480
   tilemap: {fileID: 325617872}
   aliveTile: {fileID: 11400000, guid: b6fe6723502e239488c25a3211b17872, type: 2}
   deadTile: {fileID: 11400000, guid: e44254e91db267a438fc21cd7d9009a7, type: 2}
@@ -690,8 +690,7 @@ MonoBehaviour:
   xMax: 512
   yMin: 5
   yMax: 512
-  cam: {fileID: 1033760042}
-  sens: 10
+  cinemachineCamera: {fileID: 1033760042}
 --- !u!4 &718371423
 Transform:
   m_ObjectHideFlags: 0
@@ -1029,7 +1028,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 21
+  orthographic size: 135
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1053,7 +1052,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 904735113}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 42.333363, y: 26, z: -10}
+  m_LocalPosition: {x: 240, y: 135, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1164,7 +1163,7 @@ MonoBehaviour:
   m_Follow: {fileID: 718371423}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 21
+    OrthographicSize: 135
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -1837,8 +1836,8 @@ MonoBehaviour:
   m_DeadZoneHeight: 0
   m_DeadZoneDepth: 0
   m_UnlimitedSoftZone: 0
-  m_SoftZoneWidth: 0.8
-  m_SoftZoneHeight: 0.8
+  m_SoftZoneWidth: 0.25
+  m_SoftZoneHeight: 0.25
   m_BiasX: 0
   m_BiasY: 0
   m_CenterOnActivate: 1
