@@ -18,6 +18,7 @@ public class Cell
         Dead
     }
 
+    // The current state of the cell (alive/dead).
     private State state;
 
     public Cell(State state, int xPos = 0, int yPos = 0)
@@ -42,7 +43,7 @@ public class Cell
     /// <summary>
     /// Setter for the state of the cell.
     /// </summary>
-    /// <param name="newState"></param>
+    /// <param name="newState">The new state of the cell.</param>
     public void SetState(State newState)
     {
         state = newState;
