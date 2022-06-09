@@ -9,23 +9,22 @@ using UnityEngine.Tilemaps;
 /// </summary>
 public class CustomGrid : MonoBehaviour
 {
-    public int size_x;
-    public int size_y;
+    private const int SIZE_X = 270;
+    private const int SIZE_Y = 480;
 
     // Stores all the nodes in the grid
-    public Cell[,] grid;
-    Cell[,] gridCopy;
+    private Cell[,] grid, gridCopy;
 
     public Tilemap tilemap;
-    public Tile aliveTile;
-    public Tile deadTile;
+    [SerializeField] private Tile aliveTile;
+    [SerializeField] private Tile deadTile;
 
     private const float DELAY = 0.15f;
 
     private Grid gridUnity;
 
-    CursorTracker ct = new CursorTracker();
-    Vector3Int gridPos;
+    private CursorTracker ct = new CursorTracker();
+    private Vector3Int gridPos;
 
     /// <summary>
     /// Start() is called before the first frame. Initialises necessary variables and sets the initial grid to be randomised.
@@ -110,12 +109,12 @@ public class CustomGrid : MonoBehaviour
     public void CreateGrid()
     {
         runSimulation = false;
-        grid = new Cell[size_x, size_y];
-        gridCopy = new Cell[size_x, size_y];
+        grid = new Cell[SIZE_X, SIZE_Y];
+        gridCopy = new Cell[SIZE_X, SIZE_Y];
 
-        for (int x = 0; x < size_x; x++)
+        for (int x = 0; x < SIZE_X; x++)
         {
-            for (int y = 0; y < size_y; y++)
+            for (int y = 0; y < SIZE_Y; y++)
             {
                 grid[x, y] = new Cell(RandomiseCellState(), x, y);
                 gridCopy[x, y] = new Cell(grid[x, y].GetState(), x, y);
@@ -134,9 +133,9 @@ public class CustomGrid : MonoBehaviour
         runSimulation = false;
         Cell.State state = isAlive ? Cell.State.Alive : Cell.State.Dead;
 
-        for (int x = 0; x < size_x; x++)
+        for (int x = 0; x < SIZE_X; x++)
         {
-            for (int y = 0; y < size_y; y++)
+            for (int y = 0; y < SIZE_Y; y++)
             {
                 grid[x, y].SetState(state);
             }
@@ -206,7 +205,7 @@ public class CustomGrid : MonoBehaviour
                 int checkX = cell.XPos + x;
                 int checkY = cell.YPos + y;
 
-                if (checkX >= 0 && checkX < size_x && checkY >= 0 && checkY < size_y)
+                if (checkX >= 0 && checkX < SIZE_X && checkY >= 0 && checkY < SIZE_Y)
                 {
                     neighbours.Add(grid[checkX, checkY]);
                 }
@@ -221,9 +220,9 @@ public class CustomGrid : MonoBehaviour
     /// </summary>
     public void OutputGrid()
     {
-        for (int i = 0; i < size_y; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < size_x; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
                 Vector3Int p = new Vector3Int(i, j, 0);
                 if (grid[j, i].GetState() == Cell.State.Alive)
@@ -245,11 +244,11 @@ public class CustomGrid : MonoBehaviour
     /// </summary>
     public void UpdateGrid()
     {
-        Cell[,] newGrid = new Cell[size_x, size_y];
+        Cell[,] newGrid = new Cell[SIZE_X, SIZE_Y];
 
-        for (int x = 0; x < size_x; x++)
+        for (int x = 0; x < SIZE_X; x++)
         {
-            for (int y = 0; y < size_y; y++)
+            for (int y = 0; y < SIZE_Y; y++)
             {
                 List<Cell> neighbours = Neighbours(grid[x, y]);
 
